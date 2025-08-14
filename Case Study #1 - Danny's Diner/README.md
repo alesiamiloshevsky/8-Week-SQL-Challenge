@@ -1,9 +1,9 @@
-# 🥢 Case Study #1: Dany's Diner
+# 🥢 Case Study #1: Danny’s Diner
 
 ## 📚 Table of Contents
 All information regarding the case study can be found [here](https://8weeksqlchallenge.com/case-study-1/).
 
-## 📝 Problem Statment
+## 📝 Problem Statement
 Danny’s Diner needs insights from customer data to understand visiting patterns, spending habits, and favorite menu items in order to improve the customer experience, evaluate the loyalty program, and create easy-to-use datasets for the team.
 
 ## 🗂 Entity Relationship Diagram
