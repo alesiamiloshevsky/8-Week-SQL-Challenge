@@ -9,7 +9,7 @@ Danny’s Diner needs insights from customer data to understand visiting pattern
 ## 🗂 Entity Relationship Diagram
 <img width="669" height="407" alt="image" src="https://github.com/user-attachments/assets/7d3f00f8-8e86-4fe0-ae6e-763da11c2e06" />
 
-## ❓ Case Study Questions
+## Case Study Questions
 **1. What is the total amount each customer spent at the restaurant?**
 ```sql
 SELECT 
@@ -22,7 +22,7 @@ GROUP BY sales.customer_id
 ORDER BY sales.customer_id;
 ```
 
-**Steps**
+**Steps:**
 - Use `JOIN` to merge `dannys_diner.sales` and `dannys_diner.menu` tables so both `sales.customer_id` and `menu.price` are available.  
 - Use `SUM` to calculate the total sales for each customer.  
 - Group the results by `sales.customer_id`.  
@@ -47,7 +47,7 @@ GROUP BY customer_id
 ORDER BY customer_id;
 ```
 
-**Steps**
+**Steps:**
 - Select `customer_id` from the `sales` table.  
 - Use `COUNT(DISTINCT order_date)` to count unique visit days for each customer.  
 - Group the results by `customer_id` so each customer’s total visits are calculated.  
@@ -83,7 +83,7 @@ WHERE rank_number = 1
 ORDER BY customer_id, product_name;
 ```
 
-**Steps**
+**Steps:**
 - Create a CTE `first_visit` joining `dannys_diner.sales` with `dannys_diner.menu` to bring in `product_name`.
 - Use `DENSE_RANK()` with `PARTITION BY customer_id ORDER BY order_date` to identify each customer’s first purchase day.
 - Filter to `rank_number = 1` to keep only rows from the first day per customer.
@@ -97,15 +97,73 @@ ORDER BY customer_id, product_name;
 | B           | curry        |
 | C           | ramen        |
 
+---
 
+**4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
+```sql
+SELECT
+    product_name,
+    COUNT(s.product_id) as most_purchased_item
+FROM dannys_diner.sales s 
+INNER JOIN dannys_diner.menu m
+	on s.product_id = m.product_id
+GROUP BY product_name
+ORDER BY most_purchased_item DESC
+LIMIT 1;
+```
 
+**Steps:**
+- Join `dannys_diner.sales` with `dannys_diner.menu` on `product_id` to get item names.
+- Aggregate with `COUNT(product_id)` grouped by `product_name` to total purchases per item across all customers.
+- Order by the count in descending order to bring the most purchased item to the top.
+- Limit to the top row to return only the single most purchased item.
 
+**Answer:**
+| product_name | most_purchased_item |
+|--------------|-----------------|
+| ramen        | 8               |
 
+**5. Which item was the most popular for each customer?**
+```sql
+WITH most_popular_item AS (
+SELECT 
+	customer_id,
+    product_name,
+  	COUNT(s.product_id) as item_count,
+    DENSE_RANK() OVER(PARTITION BY customer_id ORDER BY COUNT(s.product_id)) AS rank_number
+FROM dannys_diner.sales s
+INNER JOIN dannys_diner.menu m
+	on s.product_id = m.product_id
+GROUP BY customer_id, product_name
+)
 
+SELECT 
+  customer_id, 
+  product_name, 
+  item_count
+FROM most_popular_item
+WHERE rank_number = 1;
+```
 
+**Steps:**
+- Create a CTE `most_popular_item` to calculate the total number of times each `product_name` was purchased by each `customer_id`.  
+- Join `dannys_diner.sales` with `dannys_diner.menu` on `product_id` to get the product names.  
+- Aggregate with `COUNT(product_id)` grouped by `customer_id` and `product_name` to get purchase counts per customer.  
+- Use `DENSE_RANK()` partitioned by `customer_id` and ordered by the purchase count in descending order to rank items from most to least popular for each customer.  
+- In the outer query, filter for rows where `rank_number = 1` to return only the most popular item(s) for each customer.  
 
+**Answer:**
+| customer_id | product_name | item_count |
+|-------------|--------------|------------|
+| A           | sushi        | 1          |
+| B           | ramen        | 2          |
+| B           | curry        | 2          |
+| B           | sushi        | 2          |
+| C           | ramen        | 3          |
 
+---
 
+**6. Which item was purchased first by the customer after they became a member?**
 
 
 
