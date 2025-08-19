@@ -204,4 +204,4 @@ ORDER BY customer_id;
 
 ---
 
-**7. Which item was purchased just before the customer became a member?
+**7. Which item was purchased just before the customer became a member?**
