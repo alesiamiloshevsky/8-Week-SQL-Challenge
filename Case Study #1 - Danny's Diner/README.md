@@ -164,9 +164,42 @@ WHERE rank_number = 1;
 ---
 
 **6. Which item was purchased first by the customer after they became a member?**
+```sql
+WITH first_member_purchase AS (
+SELECT
+	s.customer_id,
+    product_id,
+	RANK() OVER(PARTITION BY s.customer_id ORDER BY order_date) AS rank_number
+FROM dannys_diner.sales s
+INNER JOIN dannys_diner.members mem
+	on s.customer_id = mem.customer_id
+WHERE order_date > join_date
+)
 
+SELECT 
+	customer_id,
+    product_name
+FROM first_member_purchase f
+INNER JOIN dannys_diner.menu menu
+	on f.product_id = menu.product_id
+WHERE rank_number = 1
+ORDER BY customer_id;
+```
 
+**Steps:**
+- Create a CTE `first_member_purchase` to identify each customer's purchases **after** they became a member.
+- Use `RANK()` partitioned by `customer_id` and ordered by `order_date` to find their first purchase after joining.
+- Join `dannys_diner.sales` with `dannys_diner.members` on `customer_id` to filter by join date.
+- Join with `dannys_diner.menu` to get the `product_name` for each purchase.
+- Filter for `rank_number = 1` to keep only the first purchase per customer.
+- Order by `customer_id` for clarity.
+  
+**Answer:**
+| customer_id | product_name |
+|-------------|--------------|
+| A           | ramen        |
+| B           | sushi        |
 
+---
 
-
-
+**7. Which item was purchased just before the customer became a member?
