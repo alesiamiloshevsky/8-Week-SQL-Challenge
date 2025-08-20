@@ -281,33 +281,32 @@ ORDER BY s.customer_id;
 **9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?**
 ```sql
 WITH customer_points AS (
-SELECT 
-	customer_id,
+SELECT
+  	menu.product_id,
     CASE
-        WHEN m.product_id = 1 THEN price * 20
+        WHEN menu.product_id = 1 THEN price * 20
         ELSE price * 10
     END AS points
-FROM dannys_diner.sales s 
-INNER JOIN dannys_diner.menu m
-	on s.product_id = m.product_id
+FROM dannys_diner.menu
 )
 
 SELECT 
 	customer_id,
     SUM(points) AS total_points
 FROM customer_points
+INNER JOIN dannys_diner.sales
+	on customer_points.product_id = sales.product_id
 GROUP BY customer_id
 ORDER BY customer_id;
 ```
 
 **Steps**
-- Create a CTE `customer_points` to calculate points earned for each purchase.  
-- Join `dannys_diner.sales` with `dannys_diner.menu` on `product_id` to access item prices.  
-- Use a `CASE` expression to assign points:
+- Build a CTE `customer_points` that maps each `product_id` to base points:
   - `product_id = 1` (sushi) → `price * 20`
   - all other items → `price * 10`
-- In the outer query, sum `points` per `customer_id` to get `total_points`.  
-- Order the results by `customer_id` for clarity.
+- Join `customer_points` with `dannys_diner.sales` on `product_id` to attach points to every purchase.
+- Sum `points` per `customer_id` to get each customer’s total.
+- Order by `customer_id` for clarity.
 
 **Answer**
 | customer_id | total_points |
