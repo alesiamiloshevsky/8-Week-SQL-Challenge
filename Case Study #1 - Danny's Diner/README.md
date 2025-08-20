@@ -307,7 +307,7 @@ ORDER BY customer_id;
   - `product_id = 1` (sushi) → `price * 20`
   - all other items → `price * 10`
 - In the outer query, sum `points` per `customer_id` to get `total_points`.  
-- Order the results by `customer_id` for readability.
+- Order the results by `customer_id` for clarity.
 
 **Answer**
 | customer_id | total_points |
