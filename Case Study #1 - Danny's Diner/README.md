@@ -189,7 +189,7 @@ ORDER BY customer_id;
 ```
 
 **Steps:**
-- Create a CTE `first_member_purchase` to identify each customer's purchases **after** they became a member.
+- Create a CTE `first_member_purchase` to identify each customer's purchases after they became a member.
 - Use `RANK()` partitioned by `customer_id` and ordered by `order_date` to find their first purchase after joining.
 - Join `dannys_diner.sales` with `dannys_diner.members` on `customer_id` to filter by join date.
 - Join with `dannys_diner.menu` to get the `product_name` for each purchase.
@@ -228,8 +228,8 @@ ORDER BY customer_id;
 ```
 
 **Steps:**
-- Create a CTE `last_nonmember_purchase` to capture each customer’s purchases **before** they became a member.
-- Use `DENSE_RANK()` partitioned by `customer_id` and ordered by `order_date DESC` to identify the **last pre-membership purchase date** (keeps all items if multiple were bought that day).
+- Create a CTE `last_nonmember_purchase` to capture each customer’s purchases before they became a member.
+- Use `DENSE_RANK()` partitioned by `customer_id` and ordered by `order_date DESC` to identify the last pre-membership purchase date (keeps all items if multiple were bought that day).
 - Join `dannys_diner.sales` with `dannys_diner.members` on `customer_id` and filter with `order_date < join_date`.
 - Join the CTE with `dannys_diner.menu` to retrieve the `product_name` for each purchase.
 - Filter for `rank_number = 1` to keep only purchases from the last pre-membership day.
