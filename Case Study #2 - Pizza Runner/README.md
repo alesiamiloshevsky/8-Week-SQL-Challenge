@@ -1,4 +1,4 @@
-# Case Study #2 Pizza Runner
+# Case Study #2 - Pizza Runner
 
 ## 📚 Table of Contents
 All information regarding the case study can be found [here](https://8weeksqlchallenge.com/case-study-2/).
