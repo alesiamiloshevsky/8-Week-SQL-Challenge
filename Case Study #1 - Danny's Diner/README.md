@@ -245,3 +245,37 @@ ORDER BY customer_id;
 ---
 
 **8. What is the total items and amount spent for each member before they became a member?**
+```sql
+SELECT
+	s.customer_id,
+	COUNT(s.product_id) AS total_items,
+    SUM(price) AS total_spent
+FROM dannys_diner.sales s 
+INNER JOIN dannys_diner.menu menu
+	on s.product_id = menu.product_id
+INNER JOIN dannys_diner.members mem
+	on s.customer_id = mem.customer_id
+WHERE order_date < join_date
+GROUP BY s.customer_id
+ORDER BY s.customer_id;
+```
+
+**Steps:**
+- Join `dannys_diner.sales` with `dannys_diner.menu` on `product_id` to access prices.
+- Join with `dannys_diner.members` on `customer_id` to filter only customers who became members.
+- Apply the condition `order_date < join_date` to include only purchases made before membership.
+- Use `COUNT(product_id)` to calculate the total number of items purchased.
+- Use `SUM(price)` to calculate the total amount spent.
+- Group the results by `customer_id` to get totals per customer.
+- Order by `customer_id` for clarity.
+
+
+**Answer**
+| customer_id | total_items | total_spent |
+|-------------|-------------|-------------|
+| A           | 2           | 25          |
+| B           | 3           | 40          |
+
+---
+
+**8. What is the total items and amount spent for each member before they became a member?**
