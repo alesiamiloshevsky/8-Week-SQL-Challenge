@@ -281,21 +281,21 @@ ORDER BY s.customer_id;
 **9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?**
 ```sql
 WITH customer_points AS (
-SELECT
-  	menu.product_id,
+SELECT 
+	customer_id,
     CASE
-        WHEN menu.product_id = 1 THEN price * 20
+        WHEN m.product_id = 1 THEN price * 20
         ELSE price * 10
     END AS points
-FROM dannys_diner.menu
+FROM dannys_diner.sales s 
+INNER JOIN dannys_diner.menu m
+	on s.product_id = m.product_id
 )
 
 SELECT 
 	customer_id,
     SUM(points) AS total_points
 FROM customer_points
-INNER JOIN dannys_diner.sales
-	on customer_points.product_id = sales.product_id
 GROUP BY customer_id
 ORDER BY customer_id;
 ```
@@ -343,3 +343,28 @@ FROM customer_points
 GROUP BY customer_id
 ORDER BY customer_id;
 ```
+
+**Assumptions**
+- The standard earning rate is 10 points for every $1 spent, while sushi always earns double at 20 points per $1.  
+- Before a customer’s join date, only sushi purchases qualify for the double rate; all other items earn the standard rate.  
+- From the join date through the following six days (a full seven-day period), all purchases earn double points regardless of the item.  
+- After this initial week, sushi continues to earn double points, while all other items return to the base rate of 10 points per $1.  
+- Only transactions made before February 1, 2021 are included in the calculation.  
+- Each sales record represents a separate transaction and is counted individually when assigning points.  
+
+**Steps**
+- Create a CTE `customer_points` to calculate points earned for each purchase up to Jan 31.
+- Join `dannys_diner.sales` with `dannys_diner.menu` (to get `price`) and `dannys_diner.members` (to get `join_date`).
+- Use a `CASE` expression to assign points:
+  - `product_id = 1` (sushi) before join date → `price * 20`
+  - All items during join week (join_date → join_date + 6 days) → `price * 20`
+  - Sushi after join week → `price * 20`
+  - All other items → `price * 10`
+- In the outer query, sum `points` per `customer_id` as `total_points`.
+- Order by `customer_id` for readability.
+
+**Answer**
+| customer_id | total_points |
+|-------------|--------------|
+| A           | 1370         |
+| B           | 820          |
