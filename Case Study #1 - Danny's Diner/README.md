@@ -278,4 +278,4 @@ ORDER BY s.customer_id;
 
 ---
 
-**8. What is the total items and amount spent for each member before they became a member?**
+**9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?**
