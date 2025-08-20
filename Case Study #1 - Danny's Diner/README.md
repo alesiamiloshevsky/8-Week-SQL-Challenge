@@ -205,3 +205,43 @@ ORDER BY customer_id;
 ---
 
 **7. Which item was purchased just before the customer became a member?**
+```sql
+WITH last_nonmember_purchase AS (
+SELECT
+	s.customer_id,
+  	product_id,
+	DENSE_RANK() OVER(PARTITION BY s.customer_id ORDER BY order_date DESC) AS rank_number
+FROM dannys_diner.sales s
+INNER JOIN dannys_diner.members mem
+	on s.customer_id = mem.customer_id
+WHERE 	order_date < join_date
+)
+
+SELECT 
+	customer_id,
+	product_name
+FROM last_nonmember_purchase l
+INNER JOIN dannys_diner.menu menu
+	on l.product_id = menu.product_id
+WHERE rank_number = 1
+ORDER BY customer_id;
+```
+
+**Steps:**
+- Create a CTE `last_nonmember_purchase` to capture each customer’s purchases **before** they became a member.
+- Use `DENSE_RANK()` partitioned by `customer_id` and ordered by `order_date DESC` to identify the **last pre-membership purchase date** (keeps all items if multiple were bought that day).
+- Join `dannys_diner.sales` with `dannys_diner.members` on `customer_id` and filter with `order_date < join_date`.
+- Join the CTE with `dannys_diner.menu` to retrieve the `product_name` for each purchase.
+- Filter for `rank_number = 1` to keep only purchases from the last pre-membership day.
+- Order by `customer_id` for clarity.
+
+**Answer**
+| customer_id | product_name |
+|-------------|--------------|
+| A           | curry        |
+| A           | sushi        |
+| B           | sushi        |
+
+---
+
+**8. What is the total items and amount spent for each member before they became a member?**
