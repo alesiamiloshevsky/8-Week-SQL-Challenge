@@ -165,3 +165,24 @@ The query above produces the following cleaned version of the `customer_orders` 
 ---
 
 ## Case Study Questions
+
+### A. Pizza Metrics
+**1. How many pizzas were ordered?**
+
+```sql
+SELECT COUNT(order_id)
+FROM customer_orders_temp;
+```
+
+**Steps**
+- Query the cleaned orders table `customer_orders_temp`.
+- Use `COUNT(order_id)` to count the number of order records.
+- Return the single aggregated result.
+
+**Answer**
+| count |
+|-------|
+| 14    |
+
+---
+**2. How many unique customer orders were made?**
