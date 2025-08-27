@@ -41,8 +41,8 @@ When reviewing the `customer_orders` table, we can see that some columns contain
 
 - Standardize the `exclusions` and `extras` columns so they no longer contain inconsistent values.  
 - Replace `NULL` or the literal string `'null'` with a consistent placeholder.  
-- Store the cleaned results in a new temporary table `customer_orders_temp`.  
-- Query the new table instead of the original `customer_orders` when performing analysis.  
+- Store the cleaned results in a new temporary table `customer_orders_temp`.
+<br>
 
 ```sql
 CREATE TEMP TABLE customer_orders_temp AS
@@ -60,12 +60,6 @@ SELECT
         END AS extras,    
     order_time
 FROM customer_orders;
-
-SELECT *
-FROM customer_orders;
-
-SELECT *
-FROM customer_orders_temp;
 ```
 
 <br>
@@ -90,4 +84,9 @@ The query above produces the following cleaned version of the `customer_orders` 
 | 10       | 104         | 1        |            |        | 2020-01-11 18:34:49 |
 | 10       | 104         | 1        | 2, 6       | 1, 4   | 2020-01-11 18:34:49 |
 
+---
+
+### Table:  runner_orders
+
+--- 
 ## Case Study Questions
