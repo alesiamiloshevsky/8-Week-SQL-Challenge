@@ -239,7 +239,7 @@ ORDER BY customer_id;
 - Filter for `rank_number = 1` to keep only purchases from the last pre-membership day.
 - Order by `customer_id` for clarity.
 
-**Answer**
+**Answer:**
 | customer_id | product_name |
 |-------------|--------------|
 | A           | curry        |
@@ -274,7 +274,7 @@ ORDER BY s.customer_id;
 - Order by `customer_id` for clarity.
 
 
-**Answer**
+**Answer:**
 | customer_id | total_items | total_spent |
 |-------------|-------------|-------------|
 | A           | 2           | 25          |
@@ -304,7 +304,7 @@ GROUP BY customer_id
 ORDER BY customer_id;
 ```
 
-**Steps**
+**Steps:**
 - Build a CTE `customer_points` that maps each `product_id` to base points:
   - `product_id = 1` (sushi) → `price * 20`
   - all other items → `price * 10`
@@ -312,7 +312,7 @@ ORDER BY customer_id;
 - Sum `points` per `customer_id` to get each customer’s total.
 - Order by `customer_id` for clarity.
 
-**Answer**
+**Answer:**
 | customer_id | total_points |
 |-------------|--------------|
 | A           | 860          |
@@ -348,7 +348,7 @@ GROUP BY customer_id
 ORDER BY customer_id;
 ```
 
-**Assumptions**
+**Assumptions:**
 - The standard earning rate is 10 points for every $1 spent, while sushi always earns double at 20 points per $1.  
 - Before a customer’s join date, only sushi purchases qualify for the double rate; all other items earn the standard rate.  
 - From the join date through the following six days (a full seven-day period), all purchases earn double points regardless of the item.  
@@ -356,7 +356,7 @@ ORDER BY customer_id;
 - Only transactions made before February 1, 2021 are included in the calculation.  
 - Each sales record represents a separate transaction and is counted individually when assigning points.  
 
-**Steps**
+**Steps:**
 - Create a CTE `customer_points` to calculate points earned for each purchase up to Jan 31.
 - Join `dannys_diner.sales` with `dannys_diner.menu` (to get `price`) and `dannys_diner.members` (to get `join_date`).
 - Use a `CASE` expression to assign points:
@@ -367,7 +367,7 @@ ORDER BY customer_id;
 - In the outer query, sum `points` per `customer_id` as `total_points`.
 - Order by `customer_id` for readability.
 
-**Answer**
+**Answer:**
 | customer_id | total_points |
 |-------------|--------------|
 | A           | 1370         |
