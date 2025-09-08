@@ -321,10 +321,41 @@ ORDER BY customer_id;
 **6. What was the maximum number of pizzas delivered in a single order?**
 
 ```sql
+WITH maximum_pizza AS
+(
+SELECT
+	customer.order_id,
+	COUNT(pizza_id) AS pizza_count
+FROM customer_orders_clean customer
+INNER JOIN runner_orders_clean runner
+	on customer.order_id = runner.order_id
+WHERE cancellation IS NULL
+GROUP BY customer.order_id
+)
+
+SELECT MAX(pizza_count) As max_pizza_count
+FROM maximum_pizza;
+```
+
+**Steps:**
+- Create a CTE `maximum_pizza` to calculate how many pizzas were included in each `order_id`.  
+- Join `customer_orders_clean` with `runner_orders_clean` on `order_id`.  
+- Filter out cancelled orders by checking `cancellation IS NULL`.  
+- Use `COUNT(pizza_id)` to get the pizza count per order.  
+- In the outer query, apply `MAX(pizza_count)` to find the largest number of pizzas in a single order.  
+
+**Answer:**
+| max_pizza_count |
+|-----------------|
+| 3               |
+
+---
+
+**7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?**
+
+```sql
 ```
 
 **Steps:**
 
 **Answer:**
-
----
