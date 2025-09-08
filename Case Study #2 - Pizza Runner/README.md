@@ -286,6 +286,41 @@ ORDER BY pizza_name;
 **5. How many Vegetarian and Meatlovers were ordered by each customer?**
 
 ```sql
+SELECT
+	customer_id,
+	pizza_name,
+	COUNT(pizza_name) as order_count
+FROM customer_orders customer
+INNER JOIN pizza_names pizza
+	on customer.pizza_id = pizza.pizza_id
+GROUP BY customer_id, pizza_name
+ORDER BY customer_id;
+```
+
+**Steps:**
+- Query the cleaned orders table `customer_orders_clean`.  
+- Join with the `pizza_names` table on `pizza_id` to get the pizza names.  
+- Group the results by `customer_id` and `pizza_name`.  
+- Use `COUNT(pizza_name)` to calculate how many of each pizza type was ordered per customer.  
+- Order the results by `customer_id`.  
+
+**Answer:**
+| customer_id | pizza_name  | order_count |
+|-------------|-------------|-------------|
+| 101         | Meatlovers  | 2           |
+| 101         | Vegetarian  | 1           |
+| 102         | Meatlovers  | 2           |
+| 102         | Vegetarian  | 1           |
+| 103         | Meatlovers  | 3           |
+| 103         | Vegetarian  | 1           |
+| 104         | Meatlovers  | 3           |
+| 105         | Vegetarian  | 1           |
+
+---
+
+**6. What was the maximum number of pizzas delivered in a single order?**
+
+```sql
 ```
 
 **Steps:**
