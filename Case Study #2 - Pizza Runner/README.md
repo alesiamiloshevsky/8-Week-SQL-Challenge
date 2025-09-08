@@ -41,7 +41,7 @@ When reviewing the `customer_orders` table, we can see that some columns contain
 
 - Standardize the `exclusions` and `extras` columns so they no longer contain inconsistent values.  
 - Replace `NULL` or the literal string `'null'` with a consistent placeholder.  
-- Store the cleaned results in a new temporary table `customer_orders_temp`.
+- Store the cleaned results in a new temporary table `clean_customer_orders`.
 <br>
 
 ```sql
@@ -175,7 +175,7 @@ FROM clean_customer_orders;
 ```
 
 **Steps**
-- Query the cleaned orders table `customer_orders_temp`.
+- Query the cleaned orders table `clean_customer_orders`.
 - Use `COUNT(order_id)` to count the number of order records.
 - Return the single aggregated result.
 
