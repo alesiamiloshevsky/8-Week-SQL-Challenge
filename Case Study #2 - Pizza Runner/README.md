@@ -45,7 +45,7 @@ When reviewing the `customer_orders` table, we can see that some columns contain
 <br>
 
 ```sql
-CREATE TEMP TABLE customer_orders_temp AS
+CREATE TEMP TABLE clean_customer_orders AS
 SELECT 
   order_id, 
   customer_id, 
@@ -117,7 +117,7 @@ The query above produces the following cleaned version of the `customer_orders` 
 <br>
 
 ```sql
-CREATE TEMP TABLE runner_orders_temp AS
+CREATE TEMP TABLE clean_runner_orders AS
 SELECT 
   order_id, 
   runner_id,  
@@ -171,7 +171,7 @@ The query above produces the following cleaned version of the `customer_orders` 
 
 ```sql
 SELECT COUNT(order_id)
-FROM customer_orders_temp;
+FROM clean_customer_orders;
 ```
 
 **Steps**
