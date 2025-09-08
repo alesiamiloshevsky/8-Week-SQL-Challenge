@@ -190,19 +190,34 @@ The queries above produce the following cleaned version of the `runner_orders` t
 **1. How many pizzas were ordered?**
 
 ```sql
-SELECT COUNT(order_id)
+SELECT COUNT(order_id) AS pizza_order_count
 FROM customer_orders_clean;
 ```
 
 **Steps**
 - Query the cleaned orders table `clean_customer_orders`.
 - Use `COUNT(order_id)` to count the number of order records.
-- Return the single aggregated result.
 
 **Answer**
-| count |
-|-------|
-| 14    |
+
+| pizza_order_count |
+|-------------------|
+| 14                |
 
 ---
+
 **2. How many unique customer orders were made?**
+
+```sql
+SELECT COUNT (DISTINCT order_id) AS unique_customer_orders
+FROM customer_orders_clean;
+```
+
+**Steps**
+- Query the cleaned orders table `customer_orders_clean`.  
+- Use `COUNT(DISTINCT order_id)` to count the number of unique customer orders.
+
+**Answer**
+| unique_customer_orders |
+|-------------------------|
+| 10                      | 
