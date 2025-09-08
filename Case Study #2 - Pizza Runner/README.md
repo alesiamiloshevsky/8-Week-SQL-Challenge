@@ -143,9 +143,22 @@ SELECT
 	  END AS cancellation
 FROM pizza_runner.runner_orders;
 ```
+<br>
+
+Alter the `pickup_time`, `distance`, and `duration` columns to the correct data type.
 
 <br>
-The query above produces the following cleaned version of the `customer_orders` table:
+
+```sql
+ALTER TABLE runner_orders_temp
+ALTER COLUMN pickup_time DATETIME,
+ALTER COLUMN distance FLOAT,
+ALTER COLUMN duration INT;
+```
+
+<br>
+
+The queries above produce the following cleaned version of the `customer_orders` table:
 
 &nbsp;
 
