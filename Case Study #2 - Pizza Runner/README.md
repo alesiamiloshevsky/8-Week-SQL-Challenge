@@ -191,7 +191,7 @@ The queries above produce the following cleaned version of the `runner_orders` t
 
 ```sql
 SELECT COUNT(order_id)
-FROM clean_customer_orders;
+FROM customer_orders_clean;
 ```
 
 **Steps**
