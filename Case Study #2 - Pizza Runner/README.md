@@ -194,12 +194,11 @@ SELECT COUNT(order_id) AS pizza_order_count
 FROM customer_orders_clean;
 ```
 
-**Steps**
+**Steps:**
 - Query the cleaned orders table `clean_customer_orders`.
 - Use `COUNT(order_id)` to count the number of order records.
 
-**Answer**
-
+**Answer:**
 | pizza_order_count |
 |-------------------|
 | 14                |
@@ -213,11 +212,84 @@ SELECT COUNT (DISTINCT order_id) AS unique_customer_orders
 FROM customer_orders_clean;
 ```
 
-**Steps**
+**Steps:**
 - Query the cleaned orders table `customer_orders_clean`.  
 - Use `COUNT(DISTINCT order_id)` to count the number of unique customer orders.
 
-**Answer**
+**Answer:**
 | unique_customer_orders |
-|-------------------------|
-| 10                      | 
+|------------------------|
+| 10                     | 
+
+---
+
+**3. How many successful orders were delivered by each runner?**
+
+```sql
+SELECT
+	runner_id,
+	COUNT(order_id) AS successful_delivery
+FROM runner_orders_clean
+WHERE cancellation IS NULL
+GROUP BY runner_id
+ORDER BY runner_id;
+```
+
+**Steps:**
+- Query the cleaned runner orders table `runner_orders_clean`.  
+- Filter rows where `cancellation IS NULL` to count only successful deliveries.  
+- Group the results by `runner_id`.  
+- Use `COUNT(order_id)` to calculate the number of successful deliveries for each runner.  
+- Order the results by `runner_id`.
+
+**Answer:**
+| runner_id | successful_delivery |
+|-----------|----------------------|
+| 1         | 4                    |
+| 2         | 3                    |
+| 3         | 1                    |
+
+--- 
+
+**4. How many of each type of pizza was delivered?**
+
+```sql
+SELECT 
+	pizza_name,
+    COUNT(customer.order_id) AS 
+FROM customer_orders_clean customer   
+INNER JOIN runner_orders_clean runner
+	on customer.order_id = runner.order_id
+INNER JOIN pizza_names pizza
+	on customer.pizza_id = pizza.pizza_id
+WHERE cancellation IS NULL
+GROUP BY pizza_name
+ORDER BY pizza_name;
+```
+
+**Steps:**
+- Query the cleaned orders tables `customer_orders_clean` and `runner_orders_clean`, and join them on `order_id`.  
+- Join with the `pizza_names` table to get the name of each pizza.  
+- Filter rows where `cancellation IS NULL` to include only successful deliveries.  
+- Group the results by `pizza_name`.  
+- Use `COUNT(customer.order_id)` to count how many of each pizza type were delivered.  
+- Order the results alphabetically by `pizza_name`.
+
+**Answer:**
+| pizza_name  | delivered_pizza_count |
+|-------------|-----------------------|
+| Meatlovers  | 9                     |
+| Vegetarian  | 3                     |
+
+--- 
+
+**5. How many Vegetarian and Meatlovers were ordered by each customer?**
+
+```sql
+```
+
+**Steps:**
+
+**Answer:**
+
+---
