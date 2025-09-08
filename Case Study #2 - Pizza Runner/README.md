@@ -39,27 +39,29 @@ When reviewing the `customer_orders` table, we can see that some columns contain
 
 **🛠️ Cleanup Strategy**
 
-- Standardize the `exclusions` and `extras` columns so they no longer contain inconsistent values.  
-- Replace `NULL` or the literal string `'null'` with a consistent placeholder.  
-- Store the cleaned results in a new temporary table `clean_customer_orders`.
+- Clean the `exclusions` and `extras` columns to ensure consistent handling of missing values.  
+- Replace empty strings `''` or the literal string `'null'` with SQL `NULL`.  
+- Store the cleaned results in a new temporary table `customer_orders_clean`. 
 <br>
 
 ```sql
-CREATE TEMP TABLE clean_customer_orders AS
+CREATE TEMP TABLE customer_orders_clean AS
 SELECT 
   order_id, 
   customer_id, 
   pizza_id, 
   CASE
-	  WHEN exclusions IS null OR exclusions LIKE 'null' THEN ' '
+	  WHEN exclusions = '' OR exclusions = 'null' THEN NULL
 	  ELSE exclusions
 	  END AS exclusions,
   CASE
-	  WHEN extras IS NULL or extras LIKE 'null' THEN ' '
+	  WHEN extras = '' OR extras = 'null' THEN NULL
 	  ELSE extras
 	  END AS extras,
 	order_time
 FROM pizza_runner.customer_orders;
+
+SELECT * FROM customer_orders_clean;
 ```
 
 <br>
@@ -67,22 +69,22 @@ The query above produces the following cleaned version of the `customer_orders` 
 
 &nbsp;
 
-| order_id | customer_id | pizza_id | exclusions | extras | order_time          |
-| -------- | ----------- | -------- | ---------- | ------ | ------------------- |
-| 1        | 101         | 1        |            |        | 2020-01-01 18:05:02 |
-| 2        | 101         | 1        |            |        | 2020-01-01 19:00:52 |
-| 3        | 102         | 1        |            |        | 2020-01-02 23:51:23 |
-| 3        | 102         | 2        |            |        | 2020-01-02 23:51:23 |
-| 4        | 103         | 1        | 4          |        | 2020-01-04 13:23:46 |
-| 4        | 103         | 1        | 4          |        | 2020-01-04 13:23:46 |
-| 4        | 103         | 2        | 4          |        | 2020-01-04 13:23:46 |
-| 5        | 104         | 1        |            | 1      | 2020-01-08 21:00:29 |
-| 6        | 101         | 2        |            |        | 2020-01-08 21:03:13 |
-| 7        | 105         | 2        |            | 1      | 2020-01-08 21:20:29 |
-| 8        | 102         | 1        |            |        | 2020-01-09 23:54:33 |
-| 9        | 103         | 1        | 4          | 1, 5   | 2020-01-10 11:22:59 |
-| 10       | 104         | 1        |            |        | 2020-01-11 18:34:49 |
-| 10       | 104         | 1        | 2, 6       | 1, 4   | 2020-01-11 18:34:49 |
+| order_id | customer_id | pizza_id | exclusions | extras |    order_time     |
+|----------|-------------|----------|------------|--------|-------------------|
+|    1     |     101     |    1     |    NULL    |  NULL  | 2020-01-01 18:05:02 |
+|    2     |     101     |    1     |    NULL    |  NULL  | 2020-01-01 19:00:52 |
+|    3     |     102     |    1     |    NULL    |  NULL  | 2020-01-02 23:51:23 |
+|    3     |     102     |    2     |    NULL    |  NULL  | 2020-01-02 23:51:23 |
+|    4     |     103     |    1     |     4      |  NULL  | 2020-01-04 13:23:46 |
+|    4     |     103     |    1     |     4      |  NULL  | 2020-01-04 13:23:46 |
+|    4     |     103     |    2     |     4      |  NULL  | 2020-01-04 13:23:46 |
+|    5     |     104     |    1     |    NULL    |   1    | 2020-01-08 21:00:29 |
+|    6     |     101     |    2     |    NULL    |  NULL  | 2020-01-08 21:03:13 |
+|    7     |     105     |    2     |    NULL    |   1    | 2020-01-08 21:20:29 |
+|    8     |     102     |    1     |    NULL    |  NULL  | 2020-01-09 23:54:33 |
+|    9     |     103     |    1     |     4      |  1, 5  | 2020-01-10 11:22:59 |
+|   10     |     104     |    1     |    NULL    |  NULL  | 2020-01-11 18:34:49 |
+|   10     |     104     |    1     |   2, 6     |  1, 4  | 2020-01-11 18:34:49 |
 
 ---
 
@@ -110,38 +112,42 @@ The query above produces the following cleaned version of the `customer_orders` 
 
 **🛠️ Cleanup Strategy**
 
-- Standardize the `pickup_time` column by replacing `'null'` strings with a consistent placeholder for missing values.  
-- Clean the `distance` column by removing the `'km'` suffix and converting values into a consistent numeric format, while treating `'null'` as missing.  
-- Normalize the `duration` column by removing `'minutes'`, `'minute'`, `'mins'`, and `'min'` so only numeric values remain, with `'null'` treated as missing.  
-- Ensure the `cancellation` column represents missing values consistently instead of mixing `''`, `'null'`, and `NULL`, while keeping meaningful cancellation reasons intact.  
+- Standardize the `pickup_time`, `distance`, `duration`, and `cancellation` columns to remove inconsistent values.  
+- Convert the literal string `'null'` or empty strings `''` into SQL `NULL`.  
+- Remove text units from numeric fields:  
+  - Remove `'km'` from `distance`.  
+  - Remove `'mins'`, `'minute'`, or `'minutes'` from `duration`.  
+- Store the cleaned results in a new temporary table `runner_orders_clean`.  
 <br>
 
 ```sql
-CREATE TEMP TABLE clean_runner_orders AS
+CREATE TEMP TABLE runner_orders_clean AS
 SELECT 
   order_id, 
   runner_id,  
   CASE
-	  WHEN pickup_time LIKE 'null' THEN ' '
+	  WHEN pickup_time LIKE 'null' THEN NULL
 	  ELSE pickup_time
 	  END AS pickup_time,
   CASE
-	  WHEN distance LIKE 'null' THEN ' '
+	  WHEN distance LIKE 'null' THEN NULL
 	  WHEN distance LIKE '%km' THEN TRIM('km' from distance)
 	  ELSE distance 
     END AS distance,
   CASE
-	  WHEN duration LIKE 'null' THEN ' '
+	  WHEN duration LIKE 'null' THEN NULL
 	  WHEN duration LIKE '%mins' THEN TRIM('mins' from duration)
 	  WHEN duration LIKE '%minute' THEN TRIM('minute' from duration)
 	  WHEN duration LIKE '%minutes' THEN TRIM('minutes' from duration)
 	  ELSE duration
 	  END AS duration,
   CASE
-	  WHEN cancellation IS NULL or cancellation LIKE 'null' THEN ' '
+	  WHEN cancellation = '' OR cancellation = 'null' THEN NULL
 	  ELSE cancellation
 	  END AS cancellation
 FROM pizza_runner.runner_orders;
+
+SELECT * FROM runner_orders_clean;
 ```
 <br>
 
@@ -150,30 +156,30 @@ Alter the `pickup_time`, `distance`, and `duration` columns to the correct data 
 <br>
 
 ```sql
-ALTER TABLE runner_orders_temp
-ALTER COLUMN pickup_time DATETIME,
-ALTER COLUMN distance FLOAT,
-ALTER COLUMN duration INT;
+ALTER TABLE runner_orders_clean
+	ALTER COLUMN pickup_time TYPE TIMESTAMP USING pickup_time::timestamp,
+	ALTER COLUMN distance TYPE FLOAT USING distance::float,
+    ALTER COLUMN duration TYPE INT USING duration::int;
 ```
 
 <br>
 
-The queries above produce the following cleaned version of the `customer_orders` table:
+The queries above produce the following cleaned version of the `runner_orders` table:
 
 &nbsp;
 
-| order_id | runner_id | pickup_time         | distance | duration | cancellation            |
-| -------- | --------- | ------------------- | -------- | -------- | ----------------------- |
-| 1        | 1         | 2020-01-01 18:15:34 | 20       | 32       |                         |
-| 2        | 1         | 2020-01-01 19:10:54 | 20       | 27       |                         |
-| 3        | 1         | 2020-01-03 00:12:37 | 13.4     | 20       |                         |
-| 4        | 2         | 2020-01-04 13:53:03 | 23.4     | 40       |                         |
-| 5        | 3         | 2020-01-08 21:10:57 | 10       | 15       |                         |
-| 6        | 3         |                     |          |          | Restaurant Cancellation |
-| 7        | 2         | 2020-01-08 21:30:45 | 25       | 25       |                         |
-| 8        | 2         | 2020-01-10 00:15:02 | 23.4     | 15       |                         |
-| 9        | 2         |                     |          |          | Customer Cancellation   |
-| 10       | 1         | 2020-01-11 18:50:20 | 10       | 10       |                         |
+| order_id | runner_id |     pickup_time     | distance | duration |      cancellation      |
+|----------|-----------|---------------------|----------|----------|------------------------|
+|    1     |     1     | 2020-01-01 18:15:34 |   20     |    32    | NULL                   |
+|    2     |     1     | 2020-01-01 19:10:54 |   20     |    27    | NULL                   |
+|    3     |     1     | 2020-01-03 00:12:37 |  13.4    |    20    | NULL                   |
+|    4     |     2     | 2020-01-04 13:53:03 |  23.4    |    40    | NULL                   |
+|    5     |     3     | 2020-01-08 21:10:57 |   10     |    15    | NULL                   |
+|    6     |     3     | NULL                |  NULL    |   NULL   | Restaurant Cancellation|
+|    7     |     2     | 2020-01-08 21:30:45 |   25     |    25    | NULL                   |
+|    8     |     2     | 2020-01-10 00:15:02 |  23.4    |    15    | NULL                   |
+|    9     |     2     | NULL                |  NULL    |   NULL   | Customer Cancellation  |
+|   10     |     1     | 2020-01-11 18:50:20 |   10     |    10    | NULL                   |
 
 ---
 
