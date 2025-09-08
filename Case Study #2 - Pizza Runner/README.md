@@ -256,7 +256,7 @@ ORDER BY runner_id;
 ```sql
 SELECT 
 	pizza_name,
-    COUNT(customer.order_id) AS 
+    COUNT(customer.order_id) AS delivered_pizza_count
 FROM customer_orders_clean customer   
 INNER JOIN runner_orders_clean runner
 	on customer.order_id = runner.order_id
