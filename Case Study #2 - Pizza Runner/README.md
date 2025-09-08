@@ -90,10 +90,11 @@ The query above produces the following cleaned version of the `customer_orders` 
 
 ### Table: runner_orders
 
-- The `pickup_time` column contains valid timestamps, but also includes `'null'` strings alongside actual missing values.  
-- The `distance` column is inconsistent, with values stored as numbers with `'km'` (e.g., `20km`), numbers with extra spacing (e.g., `23.4 km`), plain numbers without units (e.g., `23.4`, `10`), and `'null'` strings.  
-- The `duration` column is recorded in multiple formats such as `'minutes'`, `'minute'`, `'mins'`, `'min'`, and even entries with extra characters (e.g., `25mins`, `20 s`), as well as `'null'`.  
-- The `cancellation` column contains meaningful values like `Restaurant Cancellation` and `Customer Cancellation`, but missing data is represented inconsistently with empty strings (`''`), `'null'` text, and `NULL`.  
+When reviewing the `runner_orders` table, we can see inconsistent values across multiple columns:
+
+- Some columns contain the literal string `'null'` or blanks (`''`)
+- Numeric fields like `distance` and `duration` also include text units (`'km'`, `'minutes'`, `'mins'`, etc.).  
+- The `cancellation` column mixes blanks, `'null'`, and valid text values.
 <br>
 
 | order_id | runner_id | pickup_time         | distance | duration   | cancellation            |
