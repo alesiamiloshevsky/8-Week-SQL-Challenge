@@ -354,8 +354,49 @@ FROM maximum_pizza;
 **7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?**
 
 ```sql
+WITH pizza_count AS (
+SELECT
+	customer_id,
+	CASE
+    	WHEN exclusions IS NOT NULL OR extras IS NOT NULL THEN 1
+    	ELSE 0
+	END AS count_pizza_changes,
+	CASE
+   		WHEN exclusions IS NULL AND extras IS NULL THEN 1
+    	ELSE 0
+	END AS count_no_pizza_changes  
+FROM customer_orders_clean customer
+INNER JOIN runner_orders_clean runner
+	on customer.order_id = runner.order_id
+WHERE cancellation IS NULL
+)
+
+SELECT
+	customer_id,
+	SUM(count_pizza_changes) AS pizza_changes,
+	SUM(count_no_pizza_changes) AS no_pizza_changes
+FROM pizza_count 
+GROUP BY customer_id
+ORDER BY customer_id;
 ```
 
 **Steps:**
-
+- Create a CTE `pizza_count` to flag each delivered pizza as either having changes  
+  (`exclusions` or `extras` present) or no changes (both columns `NULL`).  
+- Join `customer_orders_clean` with `runner_orders_clean` on `order_id`.  
+- Filter rows where `cancellation IS NULL` to include only successful deliveries.  
+- In the outer query, group by `customer_id` and sum the flags to get totals for  
+  `pizza_changes` and `no_pizza_changes`.
+  
 **Answer:**
+| customer_id | pizza_changes | no_pizza_changes |
+|-------------|---------------|------------------|
+| 101         | 0             | 2                |
+| 102         | 0             | 3                |
+| 103         | 3             | 0                |
+| 104         | 2             | 1                |
+| 105         | 1             | 0                |
+
+---
+
+**8. How many pizzas were delivered that had both exclusions and extras?**
