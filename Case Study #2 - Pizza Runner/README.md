@@ -427,7 +427,40 @@ WHERE cancellation IS NULL
 ---
 
 **9. What was the total volume of pizzas ordered for each hour of the day?**
+```sql
+SELECT 
+	EXTRACT(HOUR FROM order_time) AS hour_of_the_day,
+    COUNT(order_id) AS pizza_orders
+FROM customer_orders_clean
+GROUP BY hour_of_the_day
+ORDER BY hour_of_the_day;
+```
 
+**Steps:**
+- Query the cleaned customer orders table `customer_orders_clean`.  
+- Use `EXTRACT(HOUR FROM order_time)` to obtain the hour of the day for each order.  
+- Group the results by the extracted hour.  
+- Count the number of orders in each hour with `COUNT(order_id)`.  
+- Order the results by `hour_of_the_day`.
 
+**Answer:**
+| hour_of_the_day | pizza_orders |
+|-----------------|--------------|
+| 11              | 1            |
+| 13              | 3            |
+| 18              | 3            |
+| 19              | 1            |
+| 21              | 3            |
+| 23              | 3            |
 
+---
 
+**10. What was the volume of orders for each day of the week?**
+```sql
+```
+
+**Steps:**
+
+**Answer:**
+
+---
