@@ -400,3 +400,34 @@ ORDER BY customer_id;
 ---
 
 **8. How many pizzas were delivered that had both exclusions and extras?**
+
+```sql
+SELECT 
+	COUNT(customer.order_id) AS pizza_with_exclusions_and_extras
+FROM customer_orders_clean customer
+INNER JOIN runner_orders_clean runner
+	on customer.order_id = runner.order_id
+WHERE cancellation IS NULL 
+	AND exclusions is NOT NULL 
+	AND extras IS NOT NULL;
+```
+
+**Steps:**
+- Query the cleaned orders tables `customer_orders_clean` and `runner_orders_clean`.  
+- Join them on `order_id` to match each customer order with its delivery record.  
+- Filter to include only successful deliveries (`cancellation IS NULL`).  
+- Further filter rows where both `exclusions` **and** `extras` are not `NULL`.  
+- Count the number of such pizzas using `COUNT(customer.order_id)`.  
+
+**Answer:**
+| pizza_with_exclusions_and_extras |
+|----------------------------------|
+| 1                                |
+
+---
+
+**9. What was the total volume of pizzas ordered for each hour of the day?**
+
+
+
+
