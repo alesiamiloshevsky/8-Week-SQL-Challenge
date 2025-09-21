@@ -501,10 +501,33 @@ ORDER BY day_of_the_week;
 
 **1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)**
 ```sql
+WITH signed_up_runners AS (
+	SELECT
+		registration_date - ((registration_date - DATE('2021-01-01')) % 7) AS one_week,
+		COUNT(runner_id) AS runner_count
+	FROM runners
+	GROUP BY one_week
+)
+
+SELECT 
+	one_week,
+    runner_count
+FROM signed_up_runners
+ORDER BY one_week;
 ```
 
 **Steps:**
+- Use a CTE `signed_up_runners` to group runner registrations into 7-day periods starting from `2021-01-01`.  
+- Calculate the start date of each 1-week bucket by subtracting the remainder of  
+  `(registration_date - DATE '2021-01-01') % 7` from `registration_date`.  
+- Count the number of `runner_id` values within each weekly bucket.  
+- Return the bucket start date (`one_week`) and the `runner_count`, ordered by week.
 
 **Answer:**
+| one_week  | runner_count |
+|-----------|--------------|
+| 2021-01-01 | 2 |
+| 2021-01-08 | 1 |
+| 2021-01-15 | 1 |
 
 ---
