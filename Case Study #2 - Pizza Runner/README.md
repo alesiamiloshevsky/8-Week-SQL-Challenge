@@ -457,11 +457,43 @@ ORDER BY hour_of_the_day;
 
 **10. What was the volume of orders for each day of the week?**
 ```sql
+WITH pizza_orders_per_day AS (
+	SELECT
+  		EXTRACT(DOW FROM order_time) AS day_of_the_week,
+  		COUNT(order_id) AS pizza_orders
+	FROM customer_orders_clean
+	GROUP BY day_of_the_week
+)
+
+SELECT 
+	CASE day_of_the_week
+    	WHEN 0 THEN 'Sunday'
+    	WHEN 1 THEN 'Monday'
+    	WHEN 2 THEN 'Tuesday'
+    	WHEN 3 THEN 'Wednesday'
+        WHEN 4 THEN 'Thursday'
+        WHEN 5 THEN 'Friday'
+        WHEN 6 THEN 'Saturday'
+    END,
+    pizza_orders
+FROM pizza_orders_per_day
+ORDER BY day_of_the_week;
 ```
 
 **Steps:**
+- Create a CTE `pizza_orders_per_day` to count total pizza orders for each day of the week.  
+- Use `EXTRACT(DOW FROM order_time)` to get the numeric day of the week (0 = Sunday … 6 = Saturday).  
+- Group by the extracted day and count orders with `COUNT(order_id)`.  
+- In the final query, convert the numeric day to its weekday name using a `CASE` expression.  
+- Order the results by the numeric day of the week.  
 
 **Answer:**
+| day_of_the_week | pizza_orders |
+|-----------------|--------------|
+| Wednesday       | 5            |
+| Thursday        | 3            |
+| Friday          | 1            |
+| Saturday        | 5            |
 
 ---
 
