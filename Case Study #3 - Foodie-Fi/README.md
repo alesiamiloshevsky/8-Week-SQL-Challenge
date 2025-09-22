@@ -4,10 +4,12 @@
 All information regarding the case study can be found [here](https://8weeksqlchallenge.com/case-study-3/).
 
 ## 📝 Problem Statement
-Foodie-Fi is a streaming service with monthly and annual plans that gives customers unlimited access to exclusive cooking videos from around the world. Danny and his team want to use this data to see how customers move from trial to paid, which plans they choose, when they switch plans, and when they cancel.
+Foodie-Fi is a streaming service with monthly and annual plans that gives customers unlimited access to exclusive cooking videos from around the world. Danny and his team want to use this data to see how customers move from trial to paid plans, which plans they choose, when they switch plans, and when they cancel.
 
 ## 🗂 Entity Relationship Diagram
 <img width="685" height="282" alt="image" src="https://github.com/user-attachments/assets/780b8225-832c-4bee-8618-1695c07ffedd" />
+
+<br><br>
 
 ### Table 1: `plans`
 
@@ -201,10 +203,17 @@ Based on the table above, here are the eight customers’ onboarding journeys.
 **1. How many customers has Foodie-Fi ever had?**
 
 ```sql
+SELECT COUNT(DISTINCT customer_id) AS customers_count
+FROM foodie_fi.subscriptions;
 ```
 
 **Steps:**
+- Query the `foodie_fi.subscriptions` table.  
+- Use `COUNT(DISTINCT customer_id)` to count the number of unique customers.
 
 **Answer:**
+| customers_count |
+|-----------------|
+| 1000            |
 
 ---
