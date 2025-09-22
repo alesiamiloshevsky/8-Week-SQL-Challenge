@@ -217,3 +217,83 @@ FROM foodie_fi.subscriptions;
 | 1000            |
 
 ---
+
+**2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value**
+
+```sql
+SELECT 
+  DATE_PART('month', start_date) AS month_date,
+  COUNT(customer_id)
+FROM foodie_fi.subscriptions
+WHERE plan_id = 0
+GROUP BY month_date
+ORDER BY month_date;
+```
+
+**Steps:**
+- Query the `foodie_fi.subscriptions` table.  
+- Filter rows where `plan_id = 0` to count only trial plan subscriptions.  
+- Use `DATE_PART('month', start_date)` to extract the month number from each `start_date`.  
+- Group the results by the extracted month and count the number of `customer_id` records in each month.  
+- Order the output by `month_date` to show months in chronological order.  
+
+**Answer:**
+| month_date | count |
+|------------|------|
+| 1          | 88   |
+| 2          | 68   |
+| 3          | 94   |
+| 4          | 81   |
+| 5          | 88   |
+| 6          | 79   |
+| 7          | 89   |
+| 8          | 88   |
+| 9          | 87   |
+| 10         | 79   |
+| 11         | 75   |
+| 12         | 84   |
+
+---
+
+**3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name**
+
+```sql
+SELECT
+	subscriptions.plan_id,
+	plan_name,
+	COUNT(subscriptions.customer_id) AS count_of_events
+FROM foodie_fi.subscriptions subscriptions
+INNER JOIN foodie_fi.plans plans
+	on subscriptions.plan_id = plans.plan_id
+WHERE DATE_PART('year', start_date) > 2020
+GROUP BY subscriptions.plan_id, plan_name
+ORDER BY subscriptions.plan_id;
+```
+
+**Steps:**
+- Query the `foodie_fi.subscriptions` table and join it with the `foodie_fi.plans` table on `plan_id` to get the plan names.  
+- Filter for subscriptions where the `start_date` year is greater than 2020.  
+- Group the results by `subscriptions.plan_id` and `plan_name`.  
+- Count the number of `customer_id` events per plan using `COUNT(subscriptions.customer_id)`.  
+- Order the output by `subscriptions.plan_id`.
+
+**Answer:**
+| plan_id | plan_name      | count_of_events |
+|-------- |----------------|-----------------|
+| 1       | basic monthly  | 8               |
+| 2       | pro monthly    | 60              |
+| 3       | pro annual     | 63              |
+| 4       | churn          | 71              |
+
+---
+
+**3. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?**
+
+```sql
+```
+
+**Steps:**
+
+**Answer:**
+
+---
