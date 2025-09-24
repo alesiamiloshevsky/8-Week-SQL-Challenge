@@ -208,7 +208,6 @@ FROM foodie_fi.subscriptions;
 ```
 
 **Steps:**
-- Query the `foodie_fi.subscriptions` table.  
 - Use `COUNT(DISTINCT customer_id)` to count the number of unique customers.
 
 **Answer:**
@@ -231,7 +230,6 @@ ORDER BY month_date;
 ```
 
 **Steps:**
-- Query the `foodie_fi.subscriptions` table.  
 - Filter rows where `plan_id = 0` to count only trial plan subscriptions.  
 - Use `DATE_PART('month', start_date)` to extract the month number from each `start_date`.  
 - Group the results by the extracted month and count the number of `customer_id` records in each month.  
@@ -287,7 +285,31 @@ ORDER BY subscriptions.plan_id;
 
 ---
 
-**3. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?**
+**4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?**
+
+```sql
+SELECT 
+	COUNT(DISTINCT customer_id) AS churn_count,
+    ROUND(COUNT(customer_id) / (SELECT COUNT(DISTINCT customer_id)::numeric 	FROM foodie_fi.subscriptions) * 100, 1) AS churn_percentage
+FROM foodie_fi.subscriptions
+WHERE plan_id = 4;
+```
+
+**Steps:**
+- Filter rows where `plan_id = 4` to count only churned customers.  
+- Use `COUNT(DISTINCT customer_id)` to get the total number of churned customers (`churn_count`).  
+- Divide this by the total number of distinct customers in the entire table and multiply by 100 to get a percentage.
+- Cast the total‐customer count to `numeric` so the division is performed as a decimal rather than integer.  
+- Use `ROUND(..., 1)` to round the percentage to one decimal place.
+  
+**Answer:**
+| churn_count | churn_percentage |
+|-------------|------------------|
+| 307         | 30.7             |
+
+---
+
+**3. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?**
 
 ```sql
 ```
