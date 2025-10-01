@@ -309,7 +309,37 @@ WHERE plan_id = 4;
 
 ---
 
-**3. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?**
+**5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?**
+
+```sql
+WITH customer_rank AS ( 
+SELECT customer_id, plan_id, 
+ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY start_date) AS row_number 
+FROM foodie_fi.subscriptions 
+) 
+
+SELECT 
+	COUNT(customer_id) AS churned_customers, 
+	ROUND(COUNT(customer_id) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions)::numeric * 100, 1) AS churned_customers_percentage
+FROM customer_rank WHERE plan_id = 4 AND row_number = 2;
+```
+
+**Steps:**
+- Create a CTE `customer_rank` to rank each customer’s subscription events by `start_date`  
+  using `ROW_NUMBER()` partitioned by `customer_id`.  
+- Identify customers whose **second** subscription (`row_number = 2`) is a churn event (`plan_id = 4`).  
+- Count these customers with `COUNT(customer_id)` as `churned_customers`.  
+- Divide this count by the total distinct customers from the full table to get the churn percentage.  
+- Cast the total customer count to `numeric` to ensure decimal division and round the result to one decimal place.
+
+**Answer:**
+| churned_customers | churned_customers_percentage |
+|-------------------|------------------------------|
+| 92                | 9.2                          |
+
+---
+
+**6. What is the number and percentage of customer plans after their initial free trial?**
 
 ```sql
 ```
