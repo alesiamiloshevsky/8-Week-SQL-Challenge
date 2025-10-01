@@ -290,7 +290,7 @@ ORDER BY subscriptions.plan_id;
 ```sql
 SELECT 
 	COUNT(DISTINCT customer_id) AS churn_count,
-    ROUND(COUNT(customer_id) / (SELECT COUNT(DISTINCT customer_id)::numeric 	FROM foodie_fi.subscriptions) * 100, 1) AS churn_percentage
+    ROUND(COUNT(customer_id) / (SELECT COUNT(DISTINCT customer_id)::numeric FROM foodie_fi.subscriptions) * 100, 1) AS churn_percentage
 FROM foodie_fi.subscriptions
 WHERE plan_id = 4;
 ```
@@ -313,8 +313,10 @@ WHERE plan_id = 4;
 
 ```sql
 WITH customer_rank AS ( 
-SELECT customer_id, plan_id, 
-ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY start_date) AS row_number 
+SELECT
+	customer_id,
+	plan_id, 
+	ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY start_date) AS row_number 
 FROM foodie_fi.subscriptions 
 ) 
 
@@ -342,6 +344,45 @@ FROM customer_rank WHERE plan_id = 4 AND row_number = 2;
 **6. What is the number and percentage of customer plans after their initial free trial?**
 
 ```sql
+WITH customer_rank AS (
+SELECT
+	customer_id,
+	plan_id,
+	ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY start_date) AS 	row_number
+FROM foodie_fi.subscriptions
+)
+
+SELECT
+	plan_id,
+	COUNT(customer_id) AS converted_customers,
+    ROUND((COUNT(customer_id) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions)::numeric * 100), 1) AS converted_customers_percentage
+FROM customer_rank
+WHERE row_number = 2
+GROUP BY plan_id;
+```
+
+**Steps:**
+- Create a CTE `customer_rank` that assigns each customer’s subscriptions a row number  
+  ordered by `start_date` using `ROW_NUMBER()` partitioned by `customer_id`.  
+- Focus only on the second subscription (`row_number = 2`) to capture the first conversion decision after trial.  
+- Group the results by `plan_id` to count how many customers moved to each plan.  
+- Use `COUNT(customer_id)` as `converted_customers`.  
+- Calculate the percentage by dividing each count by the total distinct customers in the dataset.  
+- Cast the denominator to `numeric` for decimal precision, and round the percentage to one decimal place.  
+
+**Answer:**
+| plan_id | converted_customers | converted_customers_percentage |
+|---------|----------------------|-------------------------------|
+| 1       | 546                  | 54.6                          |
+| 2       | 325                  | 32.5                          |
+| 3       | 37                   | 3.7                           |
+| 4       | 92                   | 9.2                           |
+
+---
+
+**7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?**
+
+```sql
 ```
 
 **Steps:**
@@ -349,3 +390,4 @@ FROM customer_rank WHERE plan_id = 4 AND row_number = 2;
 **Answer:**
 
 ---
+
