@@ -348,7 +348,7 @@ WITH customer_rank AS (
 SELECT
 	customer_id,
 	plan_id,
-	ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY start_date) AS 	row_number
+	ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY start_date) AS row_number
 FROM foodie_fi.subscriptions
 )
 
@@ -383,6 +383,51 @@ GROUP BY plan_id;
 **7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?**
 
 ```sql
+WITH next_dates AS (
+  SELECT
+    customer_id,
+    plan_id,
+  	start_date,
+    LEAD(start_date) OVER (
+      PARTITION BY customer_id
+      ORDER BY start_date
+    ) AS next_date
+  FROM foodie_fi.subscriptions
+  WHERE start_date <= '2020-12-31'
+)
+
+SELECT 
+	plan_id, 
+    COUNT(DISTINCT customer_id) AS customer_count,
+    ROUND((COUNT(customer_id) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions)::numeric * 100), 1) AS customers_percentage
+FROM next_dates
+WHERE next_date IS NULL
+GROUP BY plan_id;
+```
+
+**Steps:**
+- Create a CTE `next_dates` that uses the `LEAD()` window function to get the next subscription date for each customer, ordered by `start_date`.  
+- Filter subscriptions where `start_date` is on or before `'2020-12-31'`.  
+- In the main query, select only records where `next_date IS NULL`. These represent the latest or final plans for each customer in 2020.  
+- Group the results by `plan_id` to count how many customers ended with each plan.  
+- Use `COUNT(DISTINCT customer_id)` to ensure each customer is counted only once.  
+- Calculate the percentage of customers in each plan by dividing the plan count by the total number of unique customers.  
+- Cast the denominator to `numeric` for decimal precision and round the result to one decimal place.  
+
+**Answer:**
+| plan_id | customer_count | customers_percentage |
+|---------|----------------|----------------------|
+| 0       | 19             | 1.9                  |
+| 1       | 224            | 22.4                 |
+| 2       | 326            | 32.6                 |
+| 3       | 195            | 19.5                 |
+| 4       | 236            | 23.6                 |
+
+---
+
+**8. How many customers have upgraded to an annual plan in 2020?**
+
+```sql
 ```
 
 **Steps:**
@@ -390,4 +435,5 @@ GROUP BY plan_id;
 **Answer:**
 
 ---
+
 
