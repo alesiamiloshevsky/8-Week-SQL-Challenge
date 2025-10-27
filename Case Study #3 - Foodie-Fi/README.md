@@ -428,6 +428,27 @@ GROUP BY plan_id;
 **8. How many customers have upgraded to an annual plan in 2020?**
 
 ```sql
+SELECT COUNT(DISTINCT customer_id) AS customer_count
+FROM foodie_fi.subscriptions
+WHERE DATE_PART('year', start_date) = 2020 AND plan_id = 3;
+```
+
+**Steps:**
+- Query the `foodie_fi.subscriptions` table to analyze 2020 subscription activity.  
+- Use `DATE_PART('year', start_date) = 2020` to filter only subscriptions that started in 2020.  
+- Include `plan_id = 3` to isolate customers who subscribed to the Pro Annual plan.  
+- Use `COUNT(DISTINCT customer_id)` to count unique customers who joined that plan. 
+
+**Answer:**
+| customer_count |
+|----------------|
+| 195            |
+
+---
+
+**9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?**
+
+```sql
 ```
 
 **Steps:**
@@ -435,5 +456,4 @@ GROUP BY plan_id;
 **Answer:**
 
 ---
-
 
