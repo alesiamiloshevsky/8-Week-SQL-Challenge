@@ -9,7 +9,7 @@ Data Bank is a digital-only bank that connects customer account balances to clou
 ## 🗂 Entity Relationship Diagram
 <img width="720" height="312" alt="image" src="https://github.com/user-attachments/assets/b28506e8-5024-4331-867d-816098aa03da" />
 
-<br><br>
+<br>
 
 ### Table 1: `Regions`
 
