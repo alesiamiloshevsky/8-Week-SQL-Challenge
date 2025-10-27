@@ -9,7 +9,7 @@ Foodie-Fi is a streaming service with monthly and annual plans that gives custom
 ## 🗂 Entity Relationship Diagram
 <img width="685" height="282" alt="image" src="https://github.com/user-attachments/assets/780b8225-832c-4bee-8618-1695c07ffedd" />
 
-<br><br>
+<br>
 
 ### Table 1: `plans`
 
